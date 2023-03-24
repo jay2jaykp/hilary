@@ -1,24 +1,33 @@
 import express from "express";
 import { prisma } from "./utils/prisma";
+import cors from "cors";
 
 const app = express();
 const PORT = 3001;
 
 // add middleware that can parse the json data in request body
+// cors should only be used in development
+app.use(cors());
+
 app.use(express.json());
 
 // API Endpoints for our CRUD operations
 
 // 1. Fetch ALL ToDos
 app.get("/", async (req, res) => {
-  // const createTodo = await prisma.todo.create({
-  //   data: {
-  //     title: "my second todo",
-  //     completed: true,
-  //   },
-  // });
   const allTodo = await prisma.todo.findMany();
   res.send(allTodo);
+});
+
+app.post("/", async (req, res) => {
+  const { title } = req.body;
+  const newTodo = await prisma.todo.create({
+    data: {
+      title,
+    },
+  });
+
+  res.send(newTodo);
 });
 
 // 2. Fetch specific ToDo
